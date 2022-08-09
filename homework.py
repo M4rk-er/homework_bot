@@ -127,35 +127,27 @@ def main():
         try:
             if check_tokens():
                 response = get_api_answer(current_timestamp)
+                if response == last_response:
+                    checking_response = check_response(response)
+                    status = 'Работа еще не посступила на проверку.'
+                    send_message(bot, status)
+                    current_timestamp = time.time()
+                    time.sleep(RETRY_TIME)
                 if response != last_response:
-                    try:
-                        checking_response = check_response(response)
-                    except IndexError:
-                        status = 'Работа еще не посступила на проверку.'
-                        send_message(bot, status)
-                        current_timestamp = time.time()
-                        time.sleep(RETRY_TIME)
-                    try:
-                        if response != last_response:
-                            last_response = response
-                            checking_response = check_response(response)
-                            status = parse_status(checking_response)
-                            send_message(bot, status)
-                    except Exception as error:
-                        logger.error(
-                            f'Что то с отправкой сообщения. {error}',
-                            exc_info=True
-                        )
+                    last_response = response
+                    checking_response = check_response(response)
+                    status = parse_status(checking_response)
+                    send_message(bot, status)
+
         except Exception as error:
             logger.critical(
-                f'Отсутствие обязательных переменных окружения {error}', exc_info=True
-            )
-            logging.critical(
-                f'Отсутствие обязательных переменных окружения {error}'
+                f'Отсутствие обязательных переменных окружения {error}',
+                exc_info=True
             )
             time.sleep(RETRY_TIME)
         else:
             logging.info('Все хорошо')
+
 
 if __name__ == '__main__':
     main()
