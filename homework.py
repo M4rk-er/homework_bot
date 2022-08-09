@@ -134,13 +134,13 @@ def main():
                         checking_response = check_response(response)
                         status = parse_status(checking_response)
                         send_message(bot, status)
-                except Exception as error:
+                except Exception:
                     status = 'Работа еще не посступила на проверку.'
                     send_message(bot, status)
                     current_timestamp = time.time()
                     time.sleep(RETRY_TIME)
 
-        except Exception:
+        except Exception as error:
             logger.critical(
                 f'Отсутствие обязательных переменных окружения {error}',
                 exc_info=True
