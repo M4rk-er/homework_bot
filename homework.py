@@ -140,7 +140,7 @@ def main():
                     current_timestamp = time.time()
                     time.sleep(RETRY_TIME)
 
-        except Exception as error:
+        except Exception:
             logger.critical(
                 f'Отсутствие обязательных переменных окружения {error}',
                 exc_info=True
