@@ -135,10 +135,9 @@ def main():
                         status = parse_status(checking_response)
                         send_message(bot, status)
                 except Exception:
-                    status = 'Работа еще не посступила на проверку.'
-                    send_message(bot, status)
                     current_timestamp = time.time()
                     time.sleep(RETRY_TIME)
+                    logger.info('Пока нет обновлений')
 
         except Exception as error:
             logger.critical(
