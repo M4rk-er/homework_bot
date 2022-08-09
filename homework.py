@@ -49,7 +49,7 @@ def send_message(bot: telegram.Bot, message: str) -> None:
     text = message
     try:
         bot.send_message(chat_id=chat_id, text=text)
-        logger.info(f'Сообщение отправлено')
+        logger.info('Сообщение отправлено')
     except Exception as error:
         logger.error(f'Ошибка при отправке сообщения: {error}', exc_info=True)
 
@@ -126,42 +126,36 @@ def main():
     while True:
         try:
             if check_tokens():
-                try:
-                    response = get_api_answer(current_timestamp)
-                    if response != last_response:
-                        try:
+                response = get_api_answer(current_timestamp)
+                if response != last_response:
+                    try:
+                        checking_response = check_response(response)
+                    except IndexError:
+                        status = 'Работа еще не посступила на проверку.'
+                        send_message(bot, status)
+                        current_timestamp = time.time()
+                        time.sleep(RETRY_TIME)
+                    try:
+                        if response != last_response:
+                            last_response = response
                             checking_response = check_response(response)
-                        except IndexError:
-                            status = 'Работа еще не посступила на проверку.'
+                            status = parse_status(checking_response)
                             send_message(bot, status)
-                            current_timestamp = time.time()
-                            time.sleep(RETRY_TIME)
-                        try:
-                            if response != last_response:
-                                last_response = response
-                                checking_response = check_response(response)
-                                status = parse_status(checking_response)
-                                send_message(bot, status)
-                        except Exception as error:
-                            logger.error(
-                                f'Что то с отправкой сообщения. {error}',
-                                exc_info=True
-                            )
-
-                    logger.debug('Отсутствие в ответе новых статусов')
-                    current_timestamp = time.time()
-                    time.sleep(RETRY_TIME)
-
-                except Exception as error:
-                    message = f'Сбой в работе программы: {error}'
-                    logger.error(message, exc_info=True)
-                    time.sleep(RETRY_TIME)
-                else:
-                    logging.info('Все хорошо', exc_info=True)
+                    except Exception as error:
+                        logger.error(
+                            f'Что то с отправкой сообщения. {error}',
+                            exc_info=True
+                        )
         except Exception as error:
-            logger.critical(f'Отсутствие обязательных переменных окружения {error}', exc_info=True)
-            logging.critical(f'Отсутствие обязательных переменных окружения {error}')
-
+            logger.critical(
+                f'Отсутствие обязательных переменных окружения {error}', exc_info=True
+            )
+            logging.critical(
+                f'Отсутствие обязательных переменных окружения {error}'
+            )
+            time.sleep(RETRY_TIME)
+        else:
+            logging.info('Все хорошо')
 
 if __name__ == '__main__':
     main()
