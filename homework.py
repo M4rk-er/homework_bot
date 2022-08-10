@@ -70,7 +70,9 @@ def get_api_answer(current_timestamp: time) -> dict:
         logger.error(f'Ошибка {error} при запросе к API.')
         raise AccessApiError(f'Ошибка {error} при запросе к API.')
     if homework_statuses.status_code != 200:
-        text_error = f'Ошибка {homework_statuses.status_code}. Эндпоинт не доступен.'
+        text_error = (
+            f'Ошибка {homework_statuses.status_code}. Эндпоинт не доступен.'
+        )
         logger.error(text_error)
         raise StatusResponseError(text_error)
     response = homework_statuses.json()
@@ -95,7 +97,6 @@ def check_response(response: dict) -> dict:
     except IndexError:
         return dict()
     return homework[0]
-  
 
 
 def parse_status(homework: dict) -> str:
@@ -141,7 +142,10 @@ def main():
             try:
                 send_message(bot, status)
             except telegram.error.TelegramError as error:
-                logger.error(f'Ошибка отправки сообщения: {error}', exc_info=True)
+                logger.error(
+                    f'Ошибка отправки сообщения: {error}',
+                    exc_info=True
+                )
                 send_message(bot, 'Ошибка отправки сообщения')
         current_timestamp = time.time()
         time.sleep(RETRY_TIME)
