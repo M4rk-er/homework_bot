@@ -76,7 +76,9 @@ def get_api_answer(current_timestamp: time) -> dict:
         text_error = f'Сбой при запросе к эндпоинту: {error}'
         raise exceptions.AccessApiError(text_error)
     if homework_statuses.status_code != 200:
-        text_error = f'Ошибка {homework_statuses.status_code}. Эндпоинт не доступен.'
+        text_error = (
+            f'Ошибка {homework_statuses.status_code}. Эндпоинт не доступен.'
+        )
         raise exceptions.StatusResponseNotOKError(text_error)
     response = homework_statuses.json()
     return response
@@ -128,16 +130,16 @@ def check_tokens() -> bool:
 
 def main():
     """Основная логика работы бота."""
-    if not check_tokens():
-        error_text = 'Нет необходимых токенов для продолжения работы.'
-        send_message(bot, error_text)
-        logger.critical(error_text)
-        sys.exit()
     bot = telegram.Bot(token=TELEGRAM_TOKEN)
     current_timestamp = int(time.time())
     message_error = ''
     last_message = ''
     last_response = {}
+    if not check_tokens():
+        error_text = 'Нет необходимых токенов для продолжения работы.'
+        send_message(bot, error_text)
+        logger.critical(error_text)
+        sys.exit()
     while True:
         try:
             response = get_api_answer(current_timestamp)
