@@ -58,7 +58,7 @@ def send_message(bot: telegram.Bot, message: str) -> None:
         logger.info('Сообщение отправленно')
     except telegram.error.TelegramError as error:
         raise exceptions.SendMessageError(
-            f'Ошибка отправки сообщения: {error}'
+            f'Ошибка Telegram: {error}'
         )
 
 
@@ -157,8 +157,8 @@ def main():
                 last_message = text
                 send_message(bot, text)
 
-        except telegram.error.TelegramError as error:
-            error_text = f'Ошибка telegram: {error}'
+        except exceptions.SendMessageError as error:
+            error_text = f'Ошибка отправки сообщения: {error}'
             logger.error(error_text, exc_info=True)
 
         except Exception as error:
