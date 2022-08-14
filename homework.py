@@ -37,7 +37,7 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('BOT_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('CHAT_ID')
 
-RETRY_TIME = 60
+RETRY_TIME = 15
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
 
@@ -56,8 +56,10 @@ def send_message(bot: telegram.Bot, message: str) -> None:
     try:
         bot.send_message(chat_id=chat_id, text=text)
         logger.info('Сообщение отправленно')
-    except telegram.error.TelegramError:
-        raise exceptions.SendMessageError('Ошибка отправки сообщения')
+    except telegram.error.TelegramError as error:
+        raise exceptions.SendMessageError(
+            f'Ошибка отправки сообщения: {error}'
+        )
 
 
 def get_api_answer(current_timestamp: time) -> dict:
@@ -154,6 +156,10 @@ def main():
             if text != last_message:
                 last_message = text
                 send_message(bot, text)
+
+        except telegram.error.TelegramError as error:
+            error_text = f'Ошибка telegram: {error}'
+            logger.error(error_text, exc_info=True)
 
         except Exception as error:
             error_text = f'Ошибка: {error}'

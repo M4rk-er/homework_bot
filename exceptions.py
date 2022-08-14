@@ -1,33 +1,30 @@
-import telegram.error
-
-
 class StatusResponseNotOKError(Exception):
-    pass
+    """Код ответа страницы отличен от 200."""
 
 
 class AccessApiError(Exception):
-    pass
-
-
-class SendMessageError(telegram.error.TelegramError):
-    pass
+    """Ошибка при запросе к эндпоинту."""
 
 
 class MissingExpectedKeysError(Exception):
-    pass
+    """Ошибка при отсутствие в словаре ожидаемого ключа."""
 
 
 class KeyAcquisitionError(KeyError):
-    pass
+    """Ошибка получения значения по ключу."""
 
 
 class TypeIsNotListError(TypeError):
-    pass
+    """Ошибка - тип данных не список."""
 
 
 class TypeIsNotDictError(TypeError):
-    pass
+    """Ошибка - тип данных не словарь."""
 
 
 class NoStatusInResponse(Exception):
-    pass
+    """отсутствует ключ "status" в словаре."""
+
+
+class SendMessageError(Exception):
+    """Ошибка отправки сообщения."""
